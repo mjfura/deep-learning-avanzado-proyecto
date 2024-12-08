@@ -3,10 +3,10 @@ import torchaudio
 from transformers import BertTokenizer, BertModel
 
 class EmbeddingModel():
-    def __init__(self):
+    def __init__(self,model_name:str='wav2vec2'):
         self.tokenizer_text = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model_text = BertModel.from_pretrained('bert-base-uncased')
-        self.bundle_audio = torchaudio.pipelines.WAV2VEC2_BASE
+        self.bundle_audio = torchaudio.pipelines.WAV2VEC2_BASE if model_name == 'wav2vec2' else torchaudio.pipelines.HUBERT_BASE 
         self.model_audio = self.bundle_audio.get_model()
 
     def embed_text(self, sentence:str):
