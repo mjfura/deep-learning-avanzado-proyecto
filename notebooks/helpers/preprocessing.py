@@ -95,3 +95,21 @@ class PreprocessingDataframe:
     def load_embeddings(self, path):
         self.df = pd.read_pickle(path)
         return self
+    def add_clap_embeddings(self,embedding_model:EmbeddingModel):
+        self.df["audio_embeddings"] = None
+        self.df["text_embeddings"] = None
+        for i in range(self.df.shape[0]):
+            row_data = self.df.iloc[i]
+            if type(row_data["wav_file"]) is str:
+                try:
+                    print('Generating audio embeddings for ', row_data["wav_file"])
+                    embeddings = embedding_model.embed_audio(row_data["wav_file"])
+                    print('before saving in DF',type(embeddings))
+                    self.df.at[i, "audio_embeddings"] = embeddings
+                except Exception as e:
+                    print(f"Error extracting audio for row {i} {e}")
+            print('Generating text embeddings for ', row_data["Utterance"])
+            embedding_texto = embedding_model.embed_text(row_data["Emotion"])
+            print('before saving in DF ',type(embedding_texto))
+            self.df.at[i, "text_embeddings"] = embedding_texto
+        return self
